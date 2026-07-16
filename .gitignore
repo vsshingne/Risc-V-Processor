@@ -1,0 +1,26 @@
+# Build directories
+build/
+waveforms/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Verilator
+obj_dir/
+*.vcd
+*.fst
+*.log
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.swp
+*~
+
+# Generated binaries
+*.out
+*.elf
+*.bin

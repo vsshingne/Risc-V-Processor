@@ -1,12 +1,14 @@
 VERILATOR = verilator
 CXX = g++
 
-TOP = instruction_memory
+TOP = instruction_fetch
 
-RTL = rtl/memory/instruction_memory.sv
+RTL = \
+rtl/pc/program_counter.sv \
+rtl/memory/instruction_memory.sv \
+rtl/ifu/instruction_fetch.sv
 
-TB = tb/memory/instruction_memory_tb.cpp
-
+TB = tb/ifu/instruction_fetch_tb.cpp
 all:
 	$(VERILATOR) \
 		--cc \

@@ -1,11 +1,11 @@
 VERILATOR = verilator
 CXX = g++
 
-TOP = immediate_generator
+TOP = data_memory
 
-RTL = rtl/immediate/immediate_generator.sv
+RTL = rtl/memory/data_memory.sv
 
-TB = tb/immediate/immediate_generator_tb.cpp
+TB = tb/memory/data_memory_tb.cpp
 all:
 	$(VERILATOR) \
 		--cc \

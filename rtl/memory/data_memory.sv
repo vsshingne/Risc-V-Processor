@@ -21,13 +21,20 @@ module data_memory
       
     // Read Logic (Combinational)
       
+    integer i;
+
+    initial begin
+        for (i = 0; i < 256; i++)
+            memory[i] = 32'd0;
+    end
+
 
     always_comb
     begin
-        if(mem_read)
+        read_data = 32'd0;
+
+        if (mem_read)
             read_data = memory[address[9:2]];
-        else
-            read_data = 32'd0;
     end
 
       

@@ -1,11 +1,23 @@
 VERILATOR = verilator
 CXX = g++
 
-TOP = data_memory
+TOP = riscv_cpu
 
-RTL = rtl/memory/data_memory.sv
+RTL = \
+rtl/common/riscv_pkg.sv \
+rtl/pc/program_counter.sv \
+rtl/memory/instruction_memory.sv \
+rtl/decoder/instruction_decoder.sv \
+rtl/core/riscv_cpu.sv \
+rtl/immediate/immediate_generator.sv\
+rtl/control/control_unit.sv \
+rtl/register_file/register_file.sv \
+rtl/mux/alu_mux.sv \
+rtl/alu/alu.sv \
+rtl/memory/data_memory.sv \
+rtl/mux/wb_mux.sv 
 
-TB = tb/memory/data_memory_tb.cpp
+TB = tb/core/riscv_cpu_tb.cpp
 all:
 	$(VERILATOR) \
 		--cc \

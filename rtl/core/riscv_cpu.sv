@@ -1,0 +1,350 @@
+`timescale 1ns/1ps
+
+module riscv_cpu
+(
+      
+    // Inputs
+      
+
+    input  logic clk,
+    input  logic reset,
+
+      
+    // Debug Interface
+      
+
+    // Instruction Fetch
+    output logic [31:0] debug_pc,
+    output logic [31:0] debug_instruction,
+
+    // Instruction Decode
+    output logic [6:0]  debug_opcode,
+    output logic [4:0]  debug_rd,
+    output logic [4:0]  debug_rs1,
+    output logic [4:0]  debug_rs2,
+    output logic [2:0]  debug_funct3,
+    output logic [6:0]  debug_funct7,
+
+    output logic [31:0] debug_rs1_data,
+    output logic [31:0] debug_rs2_data,
+
+    output logic [31:0] debug_immediate,
+
+    // Execute
+    output logic [31:0] debug_alu_operand_a,
+    output logic [31:0] debug_alu_operand_b,
+    output logic [31:0] debug_alu_result,
+    output logic        debug_zero,
+
+    // Memory
+    output logic [31:0] debug_memory_address,
+    output logic [31:0] debug_memory_write_data,
+    output logic [31:0] debug_memory_read_data,
+
+    // Writeback
+    output logic [31:0] debug_writeback,
+    output logic        debug_reg_write
+);
+
+    import riscv_pkg::*;
+
+      
+    // Program Counter
+      
+
+    logic [31:0] pc;
+    logic [31:0] pc_next;
+
+      
+    // Instruction
+      
+
+    logic [31:0] instruction;
+
+      
+    // Decoder Outputs
+      
+
+    logic [6:0] opcode;
+    logic [4:0] rd;
+    logic [4:0] rs1;
+    logic [4:0] rs2;
+    logic [2:0] funct3;
+    logic [6:0] funct7;
+
+      
+    // Register File
+      
+
+    logic [31:0] rs1_data;
+    logic [31:0] rs2_data;
+
+      
+    // Immediate Generator
+      
+
+    logic [31:0] imm_i;
+    logic [31:0] imm_s;
+    logic [31:0] imm_b;
+    logic [31:0] imm_u;
+    logic [31:0] imm_j;
+
+    logic [31:0] imm_data;
+
+      
+    // Control Signals
+      
+
+    logic reg_write;
+    logic mem_read;
+    logic mem_write;
+
+    logic branch;
+    logic jump;
+
+    logic alu_src;
+    logic result_src;
+
+    alu_op_t alu_op;
+    imm_sel_t imm_sel;
+
+      
+    // Execute Stage
+      
+
+    logic [31:0] alu_operand_b;
+    logic [31:0] alu_result;
+
+    logic zero;
+
+      
+    // Memory Stage
+      
+
+    logic [31:0] memory_data;
+
+      
+    // Writeback Stage
+      
+
+    logic [31:0] writeback_data;
+
+          
+    // Next PC Logic
+      
+
+    assign pc_next = pc + 32'd4;
+
+      
+    // Debug Interface Connections
+      
+
+    // Instruction Fetch
+    assign debug_pc          = pc;
+    assign debug_instruction = instruction;
+
+    // Decoder
+    assign debug_opcode = opcode;
+    assign debug_rd     = rd;
+    assign debug_rs1    = rs1;
+    assign debug_rs2    = rs2;
+    assign debug_funct3 = funct3;
+    assign debug_funct7 = funct7;
+
+    // Register File
+    assign debug_rs1_data = rs1_data;
+    assign debug_rs2_data = rs2_data;
+
+    // Immediate Generator
+    assign debug_immediate = imm_data;
+
+    // Execute
+    assign debug_alu_operand_a = rs1_data;
+    assign debug_alu_operand_b = alu_operand_b;
+    assign debug_alu_result    = alu_result;
+    assign debug_zero          = zero;
+
+    // Memory
+    assign debug_memory_address    = alu_result;
+    assign debug_memory_write_data = rs2_data;
+    assign debug_memory_read_data  = memory_data;
+
+    // Writeback
+    assign debug_writeback = writeback_data;
+    assign debug_reg_write = reg_write;
+
+      
+    // Program Counter
+      
+
+    program_counter u_program_counter
+    (
+        .clk      (clk),
+        .reset    (reset),
+        .pc_write (1'b1),
+        .pc_next  (pc_next),
+        .pc       (pc)
+    );
+
+      
+    // Instruction Memory
+      
+
+    instruction_memory u_instruction_memory
+    (
+        .address     (pc),
+        .instruction (instruction)
+    );
+
+      
+    // Instruction Decoder
+      
+
+    instruction_decoder u_instruction_decoder
+    (
+        .instruction (instruction),
+
+        .opcode (opcode),
+        .rd     (rd),
+        .rs1    (rs1),
+        .rs2    (rs2),
+        .funct3 (funct3),
+        .funct7 (funct7)
+    );
+
+          
+    // Immediate Generator
+    immediate_generator u_immediate_generator
+    (
+        .instruction (instruction),
+        .imm_i       (imm_i),
+        .imm_s       (imm_s),
+        .imm_b       (imm_b),
+        .imm_u       (imm_u),
+        .imm_j       (imm_j)
+    );
+
+
+    always_comb
+    begin
+        case (imm_sel)
+
+            IMM_I:
+                imm_data = imm_i;
+
+            IMM_S:
+                imm_data = imm_s;
+
+            IMM_B:
+                imm_data = imm_b;
+
+            IMM_U:
+                imm_data = imm_u;
+
+            IMM_J:
+                imm_data = imm_j;
+
+            default:
+                imm_data = 32'd0;
+
+        endcase
+    end
+
+      
+    // Control Unit
+    control_unit u_control_unit
+    (
+        .opcode     (opcode),
+        .funct3     (funct3),
+        .funct7     (funct7),
+
+        .reg_write  (reg_write),
+        .mem_read   (mem_read),
+        .mem_write  (mem_write),
+
+        .branch     (branch),
+        .jump       (jump),
+
+        .alu_src    (alu_src),
+        .result_src (result_src),
+
+        .alu_op     (alu_op),
+        .imm_sel    (imm_sel)
+    );
+
+    // Register File
+    register_file u_register_file
+    (
+        .clk      (clk),
+        .reset    (reset),
+
+        .we       (1'b0),       // Temporary
+
+        .rs1_addr (rs1),
+        .rs2_addr (rs2),
+
+        .rd_addr  (5'd0),       // Temporary
+        .rd_data  (32'd0),      // Temporary
+
+        .rs1_data (rs1_data),
+        .rs2_data (rs2_data)
+    );
+
+      
+    // ALU Operand MUX
+        
+    alu_mux u_alu_mux
+    (
+        .rs2_data    (rs2_data),
+        .imm_data   (imm_data),
+
+        .alu_src     (alu_src),
+
+        .alu_operand_b (alu_operand_b)
+    );
+
+    // ALU
+    alu u_alu
+    (
+        .a (rs1_data),
+        .b (alu_operand_b),
+
+        .alu_op    (alu_op),
+
+        .result    (alu_result),
+        .zero      (zero)
+    );
+
+
+    // Data Memory
+    data_memory u_data_memory
+    (
+        .clk        (clk),
+
+        .mem_read   (mem_read),
+        .mem_write  (mem_write),
+
+        .address    (alu_result),
+
+        .write_data (rs2_data),
+
+        .read_data  (memory_data)
+    );
+
+    // Writeback MUX
+    wb_mux u_wb_mux
+    (
+        .alu_result     (alu_result),
+        .memory_data    (memory_data),
+
+        .result_src     (result_src),
+
+        .writeback_data (writeback_data)
+    );      
+  
+    // Branch / Jump Logic
+      
+
+    // To be implemented later.
+
+endmodule

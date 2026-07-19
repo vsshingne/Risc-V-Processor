@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-import alu_pkg::*;
+import riscv_pkg::*;
 
 module alu
 (
@@ -32,6 +32,7 @@ begin
 
         ALU_SLTU :
         result = (a < b) ? 32'd1 : 32'd0;
+        default : result = 32'd0;
 
     endcase
 end

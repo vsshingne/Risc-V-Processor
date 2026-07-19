@@ -43,7 +43,13 @@ module riscv_cpu
 
     // Writeback
     output logic [31:0] debug_writeback,
-    output logic        debug_reg_write
+    output logic        debug_reg_write,
+
+    output logic [31:0] debug_x0,
+    output logic [31:0] debug_x1,
+    output logic [31:0] debug_x2,
+    output logic [31:0] debug_x3,
+    output logic [31:0] debug_x4,
 );
 
     import riscv_pkg::*;
@@ -154,6 +160,8 @@ module riscv_cpu
     // Register File
     assign debug_rs1_data = rs1_data;
     assign debug_rs2_data = rs2_data;
+
+    
 
     // Immediate Generator
     assign debug_immediate = imm_data;
@@ -278,16 +286,22 @@ module riscv_cpu
         .clk      (clk),
         .reset    (reset),
 
-        .we       (1'b0),       // Temporary
+        .we       (reg_write),       // 
 
         .rs1_addr (rs1),
         .rs2_addr (rs2),
 
-        .rd_addr  (5'd0),       // Temporary
-        .rd_data  (32'd0),      // Temporary
+        .rd_addr  (rd),
+        .rd_data  (writeback_data),      
 
         .rs1_data (rs1_data),
-        .rs2_data (rs2_data)
+        .rs2_data (rs2_data),
+
+        .debug_x0(debug_x0),
+        .debug_x1(debug_x1),
+        .debug_x2(debug_x2),
+        .debug_x3(debug_x3),
+        .debug_x4(debug_x4)
     );
 
       

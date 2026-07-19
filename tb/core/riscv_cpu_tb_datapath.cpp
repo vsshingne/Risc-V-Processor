@@ -125,6 +125,8 @@ int main(int argc,char **argv)
 
     check(5, dut.debug_writeback, "Writeback");
 
+    check(5, dut.debug_x1, "x1");
+
       
     // Instruction 1 : addi x1,x0,5
       
@@ -160,6 +162,9 @@ int main(int argc,char **argv)
     check(0, dut.debug_memory_write_data, "Memory Data");
 
     check(10, dut.debug_writeback, "Writeback");
+
+    check(5,  dut.debug_x1, "x1");
+    check(10, dut.debug_x2, "x2");
       
     // Instruction 2 : addi x2,x0,10
       
@@ -218,6 +223,10 @@ int main(int argc,char **argv)
     check(1, dut.debug_zero,       "Zero Flag");
 
     check(0, dut.debug_memory_write_data, "Memory Data");
+
+    check(5,  dut.debug_x1, "x1");
+    check(10, dut.debug_x2, "x2");
+    check(15, dut.debug_x3, "x3");
       
     // Instruction 4 : sub x4,x2,x3
       
@@ -235,6 +244,11 @@ int main(int argc,char **argv)
     check(0, dut.debug_memory_write_data, "Memory Data");
 
     check(0, dut.debug_writeback, "Writeback");
+
+    check(5,  dut.debug_x1, "x1");
+    check(10, dut.debug_x2, "x2");
+    check(15, dut.debug_x3, "x3");
+    check(10, dut.debug_x4, "x4");
 
     // Display fetched instruction
       

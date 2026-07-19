@@ -13,16 +13,27 @@ module register_file
     input  logic [31:0] rd_data,
 
     output logic [31:0] rs1_data,
-    output logic [31:0] rs2_data
+    output logic [31:0] rs2_data,
+    output logic [31:0] debug_x0,
+    output logic [31:0] debug_x1,
+    output logic [31:0] debug_x2,
+    output logic [31:0] debug_x3,
+    output logic [31:0] debug_x4,
 );
 
-      
+    
+
     // Register Array
       
 
     logic [31:0] registers [31:0];
 
-      
+    assign debug_x0 = registers[0];
+    assign debug_x1 = registers[1];
+    assign debug_x2 = registers[2];
+    assign debug_x3 = registers[3];
+    assign debug_x4 = registers[4];  
+
     // Combinational Read Ports
       
 

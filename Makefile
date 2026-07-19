@@ -17,7 +17,7 @@ rtl/alu/alu.sv \
 rtl/memory/data_memory.sv \
 rtl/mux/wb_mux.sv 
 
-TB = tb/core/riscv_cpu_tb.cpp
+TB = tb/core/riscv_cpu_tb_execution.cpp
 all:
 	$(VERILATOR) \
 		--cc \

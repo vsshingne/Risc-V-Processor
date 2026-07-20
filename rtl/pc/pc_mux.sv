@@ -12,7 +12,13 @@ module pc_mux
 
     output logic [31:0] pc_next,
     input logic branch_less_than,
-    input logic lt_signed
+    input logic branch_greater_equal,
+
+    input logic branch_less_than_unsigned,
+    input logic branch_greater_equal_unsigned,
+
+    input logic lt_signed,
+    input logic lt_unsigned
 );
 
 always_comb
@@ -41,6 +47,24 @@ begin
         // BLT
         else if (branch_less_than &&
                  lt_signed)
+
+            pc_next = pc + immediate;
+
+        // BGE
+        else if(branch_greater_equal &&
+                !lt_signed)
+
+            pc_next = pc + immediate;
+
+        // BLTU
+        else if (branch_less_than_unsigned &&
+                lt_unsigned)
+
+            pc_next = pc + immediate;
+
+        // BGEU
+        else if (branch_greater_equal_unsigned &&
+                !lt_unsigned)
 
             pc_next = pc + immediate;
 

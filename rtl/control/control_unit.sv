@@ -22,7 +22,11 @@ module control_unit
     output alu_op_t  alu_op,
     output imm_sel_t imm_sel,
     output logic branch_not_equal,
-    output logic branch_less_than
+    output logic branch_less_than,
+    output logic branch_greater_equal,
+
+    output logic branch_less_than_unsigned,
+    output logic branch_greater_equal_unsigned
 );
 
 
@@ -41,6 +45,9 @@ begin
     result_src = 0;
     branch_not_equal = 0;   
     branch_less_than = 0;
+    branch_greater_equal = 0;
+    branch_less_than_unsigned = 0;
+    branch_greater_equal_unsigned = 0;
 
     alu_op = ALU_ADD;
     imm_sel = IMM_I;
@@ -181,11 +188,34 @@ begin
                     branch_less_than = 1;
                 end
 
+                // BGE
+                3'b101:
+                begin
+                    branch = 1;
+                    branch_not_equal = 0;
+                    branch_less_than = 0;
+                    branch_greater_equal = 1;
+                end
+
                 default:
                 begin
                     branch = 0;
                     branch_not_equal = 0;
                     branch_less_than = 0;
+                end
+
+                // BLTU
+                3'b110:
+                begin
+                    branch = 1;
+                    branch_less_than_unsigned = 1;
+                end
+
+                // BGEU
+                3'b111:
+                begin
+                    branch = 1;
+                    branch_greater_equal_unsigned = 1;
                 end
 
             endcase

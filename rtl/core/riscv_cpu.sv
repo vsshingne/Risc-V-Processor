@@ -58,7 +58,10 @@ module riscv_cpu
     output logic        debug_pc_write,
     output logic        debug_branch_not_equal,
     output logic        debug_branch_less_than,
+    output logic        debug_branch_greater_equal,
 
+    output logic        debug_branch_less_than_unsigned,
+    output logic        debug_branch_greater_equal_unsigned,
 
     output logic        debug_equal,
     output logic        debug_lt_signed,
@@ -159,6 +162,10 @@ module riscv_cpu
     logic lt_unsigned;
 
     logic branch_less_than;
+    logic branch_greater_equal;
+
+    logic branch_less_than_unsigned;
+    logic branch_greater_equal_unsigned;
     // Debug Interface Connections
       
 
@@ -206,6 +213,10 @@ module riscv_cpu
 
     assign debug_branch_not_equal = branch_not_equal;
     assign debug_branch_less_than = branch_less_than;
+    assign debug_branch_greater_equal = branch_greater_equal;
+
+    assign debug_branch_less_than_unsigned = branch_less_than_unsigned;
+    assign debug_branch_greater_equal_unsigned = branch_greater_equal_unsigned;
 
     assign debug_equal       = equal;
     assign debug_lt_signed   = lt_signed;
@@ -308,7 +319,10 @@ module riscv_cpu
         .alu_op     (alu_op),
         .imm_sel    (imm_sel),
         .branch_not_equal(branch_not_equal),
-        .branch_less_than(branch_less_than)
+        .branch_less_than(branch_less_than),
+        .branch_greater_equal(branch_greater_equal),
+        .branch_less_than_unsigned(branch_less_than_unsigned),
+        .branch_greater_equal_unsigned(branch_greater_equal_unsigned)
     );
 
     // Register File
@@ -400,7 +414,11 @@ module riscv_cpu
 
         .pc_next(pc_next),
         .branch_less_than(branch_less_than),
-        .lt_signed(lt_signed)
+        .branch_greater_equal(branch_greater_equal),
+        .branch_less_than_unsigned(branch_less_than_unsigned),  
+        .branch_greater_equal_unsigned(branch_greater_equal_unsigned),
+        .lt_signed(lt_signed),
+        .lt_unsigned(lt_unsigned)
     );
 
     //branch comparator

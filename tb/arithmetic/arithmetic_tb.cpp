@@ -149,7 +149,7 @@ int main(int argc,char **argv)
     check(0x0000000C, dut.debug_pc, "PC after Inst3");
 
     // Next instruction in memory
-    check(0x40310233, dut.debug_instruction, "Instruction @C");
+    check(0x40218233, dut.debug_instruction, "Instruction @C");
 
     // Register state
     check_registers(dut, 5, 10, 15, 0);     
@@ -161,10 +161,10 @@ int main(int argc,char **argv)
     check(0x00000010, dut.debug_pc, "PC after Inst4");
 
     // Instruction memory after last instruction
-    check(0x00000000, dut.debug_instruction, "Instruction @10");
+    check(0x0000006F, dut.debug_instruction, "Instruction @10");
 
     // Register state
-    check_registers(dut, 5, 10, 15, -5);
+    check_registers(dut, 5, 10, 15, 5);
 
     std::cout
         << "\nCurrent Instruction : 0x"

@@ -4,11 +4,10 @@
 
   
 # Program Selection
-  
 
 PROGRAM ?= arithmetic
+TEST ?= arithmetic
 
-  
 # Directories
   
 
@@ -44,7 +43,7 @@ VERILATOR = verilator
 
 TOP = riscv_cpu
 
-CPP = $(TB_DIR)/riscv_cpu_tb_execution.cpp
+CPP := tb/$(TEST)/$(TEST)_tb.cpp
 
 RTL = \
 rtl/common/riscv_pkg.sv \
@@ -58,7 +57,8 @@ rtl/mux/alu_mux.sv \
 rtl/alu/alu.sv \
 rtl/memory/data_memory.sv \
 rtl/mux/wb_mux.sv \
-rtl/core/riscv_cpu.sv
+rtl/core/riscv_cpu.sv\
+rtl/pc/pc_mux.sv 
 
   
 # Default Target

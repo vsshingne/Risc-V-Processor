@@ -49,7 +49,14 @@ module riscv_cpu
     output logic [31:0] debug_x1,
     output logic [31:0] debug_x2,
     output logic [31:0] debug_x3,
-    output logic [31:0] debug_x4
+    output logic [31:0] debug_x4,
+
+    output logic [31:0] debug_pc_next,
+    output logic        debug_jump,
+
+    output logic        debug_branch,
+    output logic        debug_pc_write,
+    output logic        debug_branch_not_equal
 );
 
     import riscv_pkg::*;
@@ -60,6 +67,9 @@ module riscv_cpu
 
     logic [31:0] pc;
     logic [31:0] pc_next;
+    logic pc_write;
+
+    assign pc_write = 1'b1;
 
       
     // Instruction
@@ -135,13 +145,10 @@ module riscv_cpu
 
     logic [31:0] writeback_data;
 
-          
-    // Next PC Logic
-      
+    // Branch / Jump Logic  
+    logic branch_not_equal;
 
-    assign pc_next = pc + 32'd4;
 
-      
     // Debug Interface Connections
       
 
@@ -180,6 +187,14 @@ module riscv_cpu
     // Writeback
     assign debug_writeback = writeback_data;
     assign debug_reg_write = reg_write;
+
+    assign debug_pc_next = pc_next;
+    assign debug_jump    = jump;
+
+    assign debug_branch   = branch;
+    assign debug_pc_write = pc_write;
+
+    assign debug_branch_not_equal = branch_not_equal;
 
       
     // Program Counter
@@ -277,7 +292,8 @@ module riscv_cpu
         .result_src (result_src),
 
         .alu_op     (alu_op),
-        .imm_sel    (imm_sel)
+        .imm_sel    (imm_sel),
+        .branch_not_equal(branch_not_equal)
     );
 
     // Register File
@@ -355,10 +371,20 @@ module riscv_cpu
 
         .writeback_data (writeback_data)
     );      
-  
-    // Branch / Jump Logic
-      
 
-    // To be implemented later.
+    //PC mux
+    pc_mux u_pc_mux
+    (
+        .pc(pc),
+        .immediate(imm_data),
+
+        .branch(branch),
+        .branch_not_equal(branch_not_equal),
+        .jump(jump),
+        .zero(zero),
+
+        .pc_next(pc_next)
+    );
+  
 
 endmodule

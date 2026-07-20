@@ -21,7 +21,8 @@ module control_unit
 
     output alu_op_t  alu_op,
     output imm_sel_t imm_sel,
-    output logic branch_not_equal
+    output logic branch_not_equal,
+    output logic branch_less_than
 );
 
 
@@ -39,6 +40,7 @@ begin
     alu_src = 0;
     result_src = 0;
     branch_not_equal = 0;   
+    branch_less_than = 0;
 
     alu_op = ALU_ADD;
     imm_sel = IMM_I;
@@ -155,22 +157,35 @@ begin
 
             case (funct3)
 
-                3'b000:      // BEQ
+                // BEQ
+                3'b000:
                 begin
                     branch = 1;
                     branch_not_equal = 0;
+                    branch_less_than = 0;
                 end
 
-                3'b001:      // BNE
+                // BNE
+                3'b001:
                 begin
                     branch = 1;
                     branch_not_equal = 1;
+                    branch_less_than = 0;
+                end
+
+                // BLT
+                3'b100:
+                begin
+                    branch = 1;
+                    branch_not_equal = 0;
+                    branch_less_than = 1;
                 end
 
                 default:
                 begin
                     branch = 0;
                     branch_not_equal = 0;
+                    branch_less_than = 0;
                 end
 
             endcase

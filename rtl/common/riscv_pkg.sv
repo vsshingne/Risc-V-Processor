@@ -35,4 +35,16 @@ typedef enum logic [2:0]
 
 } imm_sel_t;
 
+typedef enum logic [2:0]
+{
+    BR_NONE = 3'd0,
+    BR_BEQ  = 3'd1,
+    BR_BNE  = 3'd2,
+    BR_BLT  = 3'd3,
+    BR_BGE  = 3'd4,
+    BR_BLTU = 3'd5,
+    BR_BGEU = 3'd6
+} branch_type_t;
+
+
 endpackage

@@ -55,6 +55,7 @@ rtl/immediate/immediate_generator.sv \
 rtl/register_file/register_file.sv \
 rtl/mux/alu_mux.sv \
 rtl/alu/alu.sv \
+rtl/comparator/branch_comparator.sv \
 rtl/memory/data_memory.sv \
 rtl/mux/wb_mux.sv \
 rtl/core/riscv_cpu.sv\

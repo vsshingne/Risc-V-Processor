@@ -56,7 +56,11 @@ module riscv_cpu
 
     output logic        debug_branch,
     output logic        debug_pc_write,
-    output logic        debug_branch_not_equal
+    output logic        debug_branch_not_equal,
+
+    output logic debug_equal,
+    output logic debug_lt_signed,
+    output logic debug_lt_unsigned
 );
 
     import riscv_pkg::*;
@@ -148,7 +152,9 @@ module riscv_cpu
     // Branch / Jump Logic  
     logic branch_not_equal;
 
-
+    logic equal;
+    logic lt_signed;
+    logic lt_unsigned;
     // Debug Interface Connections
       
 
@@ -196,7 +202,10 @@ module riscv_cpu
 
     assign debug_branch_not_equal = branch_not_equal;
 
-      
+    assign debug_equal       = equal;
+    assign debug_lt_signed   = lt_signed;
+    assign debug_lt_unsigned = lt_unsigned;
+
     // Program Counter
       
 
@@ -384,6 +393,17 @@ module riscv_cpu
         .zero(zero),
 
         .pc_next(pc_next)
+    );
+
+    //branch comparator
+    branch_comparator u_branch_comparator
+    (
+        .rs1(rs1_data),
+        .rs2(rs2_data),
+
+        .equal(equal),
+        .lt_signed(lt_signed),
+        .lt_unsigned(lt_unsigned)
     );
   
 

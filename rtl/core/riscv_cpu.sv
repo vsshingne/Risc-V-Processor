@@ -49,7 +49,7 @@ module riscv_cpu
     output logic [31:0] debug_x1,
     output logic [31:0] debug_x2,
     output logic [31:0] debug_x3,
-    output logic [31:0] debug_x4,
+    output logic [31:0] debug_x4
 );
 
     import riscv_pkg::*;
@@ -286,7 +286,7 @@ module riscv_cpu
         .clk      (clk),
         .reset    (reset),
 
-        .we       (reg_write),       // 
+        .we       (reg_write),       
 
         .rs1_addr (rs1),
         .rs2_addr (rs2),

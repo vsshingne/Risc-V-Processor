@@ -18,7 +18,7 @@ module register_file
     output logic [31:0] debug_x1,
     output logic [31:0] debug_x2,
     output logic [31:0] debug_x3,
-    output logic [31:0] debug_x4,
+    output logic [31:0] debug_x4
 );
 
     

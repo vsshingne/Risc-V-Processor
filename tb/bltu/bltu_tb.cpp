@@ -82,11 +82,11 @@ int main(int argc,char **argv)
 
     tick(dut,trace,sim_time);
 
-    check(5,dut.debug_x1,"x1");
+    check(10,dut.debug_x1,"x1");
 
     tick(dut,trace,sim_time);
 
-    check(10,dut.debug_x2,"x2");
+    check(5,dut.debug_x2,"x2");
 
     tick(dut,trace,sim_time);
 
@@ -112,8 +112,8 @@ int main(int argc,char **argv)
 
     tick(dut,trace,sim_time);
 
-    check(5,dut.debug_x1,"x1");
-    check(10,dut.debug_x2,"x2");
+    check(10,dut.debug_x1,"x1");
+    check(5,dut.debug_x2,"x2");
     tick(dut, trace, sim_time);          // executes addi x3
 
     check(100, dut.debug_x3, "x3 executed");

@@ -20,13 +20,17 @@ module control_unit
     output logic result_src,
 
     output alu_op_t  alu_op,
+    output mem_size_t mem_size,
+    output logic mem_unsigned,
     output imm_sel_t imm_sel,
     output logic branch_not_equal,
     output logic branch_less_than,
     output logic branch_greater_equal,
 
     output logic branch_less_than_unsigned,
-    output logic branch_greater_equal_unsigned
+    output logic branch_greater_equal_unsigned,
+
+    output logic [1:0] alu_a_sel
 );
 
 
@@ -50,7 +54,10 @@ begin
     branch_greater_equal_unsigned = 0;
 
     alu_op = ALU_ADD;
+    mem_size = MEM_WORD;
+    mem_unsigned = 0;
     imm_sel = IMM_I;
+    alu_a_sel = 2'b00;
 
     case (opcode)
 
@@ -119,13 +126,30 @@ begin
           
         7'b0000011:
         begin
-            reg_write = 1;
-            mem_read = 1;
-            alu_src = 1;
-            result_src = 1;
-
             imm_sel = IMM_I;
             alu_op = ALU_ADD;
+            mem_size = MEM_WORD;
+            mem_unsigned = 0;
+
+            case (funct3)
+
+                3'b010:
+                begin
+                    reg_write = 1;
+                    mem_read = 1;
+                    alu_src = 1;
+                    result_src = 1;
+                end
+
+                default:
+                begin
+                    reg_write = 0;
+                    mem_read = 0;
+                    alu_src = 0;
+                    result_src = 0;
+                end
+
+            endcase
         end
 
           
@@ -133,11 +157,25 @@ begin
           
         7'b0100011:
         begin
-            mem_write = 1;
-            alu_src = 1;
-
             imm_sel = IMM_S;
             alu_op = ALU_ADD;
+            mem_size = MEM_WORD;
+
+            case (funct3)
+
+                3'b010:
+                begin
+                    mem_write = 1;
+                    alu_src = 1;
+                end
+
+                default:
+                begin
+                    mem_write = 0;
+                    alu_src = 0;
+                end
+
+            endcase
         end
 
         // JAL
@@ -219,6 +257,26 @@ begin
                 end
 
             endcase
+        end
+
+        // LUI — rd = 0 + imm_u  (operand A forced to zero)
+        7'b0110111:
+        begin
+            reg_write  = 1;
+            alu_src    = 1;
+            imm_sel    = IMM_U;
+            alu_op     = ALU_ADD;
+            alu_a_sel  = 2'b10;
+        end
+
+        // AUIPC — rd = PC + imm_u  (operand A is current PC)
+        7'b0010111:
+        begin
+            reg_write  = 1;
+            alu_src    = 1;
+            imm_sel    = IMM_U;
+            alu_op     = ALU_ADD;
+            alu_a_sel  = 2'b01;
         end
 
         default:

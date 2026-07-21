@@ -94,6 +94,8 @@ int main(int argc,char** argv)
 
     dut.mem_read = 0;
     dut.mem_write = 0;
+    dut.mem_size = 2;
+    dut.mem_unsigned = 0;
     dut.address = 0;
     dut.write_data = 0;
 

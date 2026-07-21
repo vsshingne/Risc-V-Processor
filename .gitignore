@@ -24,3 +24,7 @@ obj_dir/
 *.out
 *.elf
 *.bin
+
+#AI
+.agents/
+.codex/

@@ -46,5 +46,12 @@ typedef enum logic [2:0]
     BR_BGEU = 3'd6
 } branch_type_t;
 
+typedef enum logic [1:0]
+{
+    MEM_BYTE = 2'b00,
+    MEM_HALF = 2'b01,
+    MEM_WORD = 2'b10
+} mem_size_t;
+
 
 endpackage

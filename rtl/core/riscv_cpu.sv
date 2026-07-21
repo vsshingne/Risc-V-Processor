@@ -131,16 +131,31 @@ module riscv_cpu
     logic result_src;
 
     alu_op_t alu_op;
+    mem_size_t mem_size;
+    logic mem_unsigned;
     imm_sel_t imm_sel;
+
+    logic [1:0] alu_a_sel;   // 2'b00=rs1_data  2'b01=pc  2'b10=zero
 
       
     // Execute Stage
       
 
+    logic [31:0] alu_operand_a;
     logic [31:0] alu_operand_b;
     logic [31:0] alu_result;
 
     logic zero;
+
+    // Operand A MUX (selects rs1_data, PC, or zero)
+    always_comb
+    begin
+        case (alu_a_sel)
+            2'b01:   alu_operand_a = pc;
+            2'b10:   alu_operand_a = 32'd0;
+            default: alu_operand_a = rs1_data;
+        endcase
+    end
 
       
     // Memory Stage
@@ -191,7 +206,7 @@ module riscv_cpu
     assign debug_immediate = imm_data;
 
     // Execute
-    assign debug_alu_operand_a = rs1_data;
+    assign debug_alu_operand_a = alu_operand_a;
     assign debug_alu_operand_b = alu_operand_b;
     assign debug_alu_result    = alu_result;
     assign debug_zero          = zero;
@@ -317,12 +332,15 @@ module riscv_cpu
         .result_src (result_src),
 
         .alu_op     (alu_op),
+        .mem_size   (mem_size),
+        .mem_unsigned(mem_unsigned),
         .imm_sel    (imm_sel),
         .branch_not_equal(branch_not_equal),
         .branch_less_than(branch_less_than),
         .branch_greater_equal(branch_greater_equal),
         .branch_less_than_unsigned(branch_less_than_unsigned),
-        .branch_greater_equal_unsigned(branch_greater_equal_unsigned)
+        .branch_greater_equal_unsigned(branch_greater_equal_unsigned),
+        .alu_a_sel  (alu_a_sel)
     );
 
     // Register File
@@ -365,7 +383,7 @@ module riscv_cpu
     // ALU
     alu u_alu
     (
-        .a (rs1_data),
+        .a (alu_operand_a),
         .b (alu_operand_b),
 
         .alu_op    (alu_op),
@@ -382,6 +400,9 @@ module riscv_cpu
 
         .mem_read   (mem_read),
         .mem_write  (mem_write),
+
+        .mem_size   (mem_size),
+        .mem_unsigned(mem_unsigned),
 
         .address    (alu_result),
 

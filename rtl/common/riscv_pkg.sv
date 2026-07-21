@@ -55,3 +55,4 @@ typedef enum logic [1:0]
 
 
 endpackage
+

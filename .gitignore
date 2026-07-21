@@ -1,5 +1,7 @@
-# Build directories
+# Build directories & outputs
 build/
+software/build/
+software/program.hex
 waveforms/
 
 # Python
@@ -7,24 +9,26 @@ waveforms/
 __pycache__/
 *.pyc
 
-# Verilator
+# Verilator & C++ Build Outputs
 obj_dir/
+*.o
+*.d
 *.vcd
 *.fst
 *.log
 
-# VS Code
+# IDE & OS Temporary Files
 .vscode/
-
-# Temporary files
 *.swp
 *~
+.DS_Store
 
-# Generated binaries
+# Generated Binaries & Executables
 *.out
 *.elf
 *.bin
 
-#AI
+# AI Tooling Directories
 .agents/
 .codex/
+.gemini/

@@ -10,13 +10,11 @@ module branch_comparator
     output logic        lt_unsigned
 );
 
-always_comb
-begin
-    equal       = (rs1 == rs2);
-
-    lt_signed   = ($signed(rs1) < $signed(rs2));
-
-    lt_unsigned = (rs1 < rs2);
-end
+    always_comb
+    begin
+        equal       = (rs1 == rs2);
+        lt_signed   = ($signed(rs1) < $signed(rs2));
+        lt_unsigned = (rs1 < rs2);
+    end
 
 endmodule

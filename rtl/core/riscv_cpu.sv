@@ -2,22 +2,14 @@
 
 module riscv_cpu
 (
-      
     // Inputs
-      
-
     input  logic clk,
     input  logic reset,
 
-      
-    // Debug Interface
-      
-
-    // Instruction Fetch
+    // Debug Interface Ports
     output logic [31:0] debug_pc,
     output logic [31:0] debug_instruction,
 
-    // Instruction Decode
     output logic [6:0]  debug_opcode,
     output logic [4:0]  debug_rd,
     output logic [4:0]  debug_rs1,
@@ -30,18 +22,15 @@ module riscv_cpu
 
     output logic [31:0] debug_immediate,
 
-    // Execute
     output logic [31:0] debug_alu_operand_a,
     output logic [31:0] debug_alu_operand_b,
     output logic [31:0] debug_alu_result,
     output logic        debug_zero,
 
-    // Memory
     output logic [31:0] debug_memory_address,
     output logic [31:0] debug_memory_write_data,
     output logic [31:0] debug_memory_read_data,
 
-    // Writeback
     output logic [31:0] debug_writeback,
     output logic        debug_reg_write,
 
@@ -70,26 +59,17 @@ module riscv_cpu
 
     import riscv_pkg::*;
 
-      
-    // Program Counter
-      
-
+    // Program Counter Signals
     logic [31:0] pc;
     logic [31:0] pc_next;
-    logic pc_write;
+    logic        pc_write;
 
     assign pc_write = 1'b1;
 
-      
-    // Instruction
-      
-
+    // Instruction Signal
     logic [31:0] instruction;
 
-      
-    // Decoder Outputs
-      
-
+    // Decoder Output Signals
     logic [6:0] opcode;
     logic [4:0] rd;
     logic [4:0] rs1;
@@ -97,17 +77,11 @@ module riscv_cpu
     logic [2:0] funct3;
     logic [6:0] funct7;
 
-      
-    // Register File
-      
-
+    // Register File Output Signals
     logic [31:0] rs1_data;
     logic [31:0] rs2_data;
 
-      
-    // Immediate Generator
-      
-
+    // Immediate Generator Output Signals
     logic [31:0] imm_i;
     logic [31:0] imm_s;
     logic [31:0] imm_b;
@@ -116,31 +90,26 @@ module riscv_cpu
 
     logic [31:0] imm_data;
 
-      
     // Control Signals
-      
-
     logic reg_write;
     logic mem_read;
     logic mem_write;
 
     logic branch;
     logic jump;
+    logic jalr;
 
     logic alu_src;
     logic result_src;
 
-    alu_op_t alu_op;
+    alu_op_t   alu_op;
     mem_size_t mem_size;
-    logic mem_unsigned;
-    imm_sel_t imm_sel;
+    logic      mem_unsigned;
+    imm_sel_t  imm_sel;
 
     logic [1:0] alu_a_sel;   // 2'b00=rs1_data  2'b01=pc  2'b10=zero
 
-      
-    // Execute Stage
-      
-
+    // Execute Stage Signals
     logic [31:0] alu_operand_a;
     logic [31:0] alu_operand_b;
     logic [31:0] alu_result;
@@ -157,19 +126,13 @@ module riscv_cpu
         endcase
     end
 
-      
-    // Memory Stage
-      
-
+    // Memory Stage Signals
     logic [31:0] memory_data;
 
-      
-    // Writeback Stage
-      
-
+    // Writeback Stage Signals
     logic [31:0] writeback_data;
 
-    // Branch / Jump Logic  
+    // Branch / Jump Signals
     logic branch_not_equal;
 
     logic equal;
@@ -181,14 +144,11 @@ module riscv_cpu
 
     logic branch_less_than_unsigned;
     logic branch_greater_equal_unsigned;
-    // Debug Interface Connections
-      
 
-    // Instruction Fetch
+    // Debug Interface Assignments
     assign debug_pc          = pc;
     assign debug_instruction = instruction;
 
-    // Decoder
     assign debug_opcode = opcode;
     assign debug_rd     = rd;
     assign debug_rs1    = rs1;
@@ -196,27 +156,20 @@ module riscv_cpu
     assign debug_funct3 = funct3;
     assign debug_funct7 = funct7;
 
-    // Register File
     assign debug_rs1_data = rs1_data;
     assign debug_rs2_data = rs2_data;
 
-    
-
-    // Immediate Generator
     assign debug_immediate = imm_data;
 
-    // Execute
     assign debug_alu_operand_a = alu_operand_a;
     assign debug_alu_operand_b = alu_operand_b;
     assign debug_alu_result    = alu_result;
     assign debug_zero          = zero;
 
-    // Memory
     assign debug_memory_address    = alu_result;
     assign debug_memory_write_data = rs2_data;
     assign debug_memory_read_data  = memory_data;
 
-    // Writeback
     assign debug_writeback = writeback_data;
     assign debug_reg_write = reg_write;
 
@@ -237,9 +190,7 @@ module riscv_cpu
     assign debug_lt_signed   = lt_signed;
     assign debug_lt_unsigned = lt_unsigned;
 
-    // Program Counter
-      
-
+    // Program Counter Unit
     program_counter u_program_counter
     (
         .clk      (clk),
@@ -249,24 +200,17 @@ module riscv_cpu
         .pc       (pc)
     );
 
-      
-    // Instruction Memory
-      
-
+    // Instruction Memory Unit
     instruction_memory u_instruction_memory
     (
         .address     (pc),
         .instruction (instruction)
     );
 
-      
-    // Instruction Decoder
-      
-
+    // Instruction Decoder Unit
     instruction_decoder u_instruction_decoder
     (
         .instruction (instruction),
-
         .opcode (opcode),
         .rd     (rd),
         .rs1    (rs1),
@@ -275,8 +219,7 @@ module riscv_cpu
         .funct7 (funct7)
     );
 
-          
-    // Immediate Generator
+    // Immediate Generator Unit
     immediate_generator u_immediate_generator
     (
         .instruction (instruction),
@@ -287,33 +230,19 @@ module riscv_cpu
         .imm_j       (imm_j)
     );
 
-
+    // Immediate Select MUX
     always_comb
     begin
         case (imm_sel)
-
-            IMM_I:
-                imm_data = imm_i;
-
-            IMM_S:
-                imm_data = imm_s;
-
-            IMM_B:
-                imm_data = imm_b;
-
-            IMM_U:
-                imm_data = imm_u;
-
-            IMM_J:
-                imm_data = imm_j;
-
-            default:
-                imm_data = 32'd0;
-
+            IMM_I:   imm_data = imm_i;
+            IMM_S:   imm_data = imm_s;
+            IMM_B:   imm_data = imm_b;
+            IMM_U:   imm_data = imm_u;
+            IMM_J:   imm_data = imm_j;
+            default: imm_data = 32'd0;
         endcase
     end
 
-      
     // Control Unit
     control_unit u_control_unit
     (
@@ -340,26 +269,22 @@ module riscv_cpu
         .branch_greater_equal(branch_greater_equal),
         .branch_less_than_unsigned(branch_less_than_unsigned),
         .branch_greater_equal_unsigned(branch_greater_equal_unsigned),
-        .alu_a_sel  (alu_a_sel)
+        .alu_a_sel  (alu_a_sel),
+        .jalr       (jalr)
     );
 
-    // Register File
+    // Register File Unit
     register_file u_register_file
     (
         .clk      (clk),
         .reset    (reset),
-
-        .we       (reg_write),       
-
+        .we       (reg_write),
         .rs1_addr (rs1),
         .rs2_addr (rs2),
-
         .rd_addr  (rd),
-        .rd_data  (writeback_data),      
-
+        .rd_data  (writeback_data),
         .rs1_data (rs1_data),
         .rs2_data (rs2_data),
-
         .debug_x0(debug_x0),
         .debug_x1(debug_x1),
         .debug_x2(debug_x2),
@@ -367,91 +292,78 @@ module riscv_cpu
         .debug_x4(debug_x4)
     );
 
-      
-    // ALU Operand MUX
-        
+    // ALU Operand B MUX
     alu_mux u_alu_mux
     (
-        .rs2_data    (rs2_data),
-        .imm_data   (imm_data),
-
-        .alu_src     (alu_src),
-
+        .rs2_data      (rs2_data),
+        .imm_data      (imm_data),
+        .alu_src       (alu_src),
         .alu_operand_b (alu_operand_b)
     );
 
-    // ALU
+    // ALU Unit
     alu u_alu
     (
-        .a (alu_operand_a),
-        .b (alu_operand_b),
-
-        .alu_op    (alu_op),
-
-        .result    (alu_result),
-        .zero      (zero)
+        .a      (alu_operand_a),
+        .b      (alu_operand_b),
+        .alu_op (alu_op),
+        .result (alu_result),
+        .zero   (zero)
     );
 
-
-    // Data Memory
+    // Data Memory Unit
     data_memory u_data_memory
     (
-        .clk        (clk),
-
-        .mem_read   (mem_read),
-        .mem_write  (mem_write),
-
-        .mem_size   (mem_size),
-        .mem_unsigned(mem_unsigned),
-
-        .address    (alu_result),
-
-        .write_data (rs2_data),
-
-        .read_data  (memory_data)
+        .clk          (clk),
+        .mem_read     (mem_read),
+        .mem_write    (mem_write),
+        .mem_size     (mem_size),
+        .mem_unsigned (mem_unsigned),
+        .address      (alu_result),
+        .write_data   (rs2_data),
+        .read_data    (memory_data)
     );
 
-    // Writeback MUX
+    // Writeback MUX Unit
     wb_mux u_wb_mux
     (
         .alu_result     (alu_result),
         .memory_data    (memory_data),
-
+        .pc             (pc),
         .result_src     (result_src),
-
+        .jump           (jump),
         .writeback_data (writeback_data)
-    );      
+    );
 
-    //PC mux
+    // PC Selection MUX Unit
     pc_mux u_pc_mux
     (
-        .pc(pc),
-        .immediate(imm_data),
-
-        .branch(branch),
-        .branch_not_equal(branch_not_equal),
-        .jump(jump),
-        .zero(zero),
-
-        .pc_next(pc_next),
-        .branch_less_than(branch_less_than),
-        .branch_greater_equal(branch_greater_equal),
-        .branch_less_than_unsigned(branch_less_than_unsigned),  
-        .branch_greater_equal_unsigned(branch_greater_equal_unsigned),
-        .lt_signed(lt_signed),
-        .lt_unsigned(lt_unsigned)
+        .pc                            (pc),
+        .immediate                     (imm_data),
+        .alu_result                    (alu_result),
+        .branch                        (branch),
+        .branch_not_equal              (branch_not_equal),
+        .jump                          (jump),
+        .jalr                          (jalr),
+        .zero                          (zero),
+        .pc_next                       (pc_next),
+        .branch_less_than              (branch_less_than),
+        .branch_greater_equal          (branch_greater_equal),
+        .branch_less_than_unsigned     (branch_less_than_unsigned),
+        .branch_greater_equal_unsigned (branch_greater_equal_unsigned),
+        .lt_signed                     (lt_signed),
+        .lt_unsigned                   (lt_unsigned)
     );
 
-    //branch comparator
+    // Branch Comparator Unit
     branch_comparator u_branch_comparator
     (
-        .rs1(rs1_data),
-        .rs2(rs2_data),
-
-        .equal(equal),
-        .lt_signed(lt_signed),
+        .rs1        (rs1_data),
+        .rs2        (rs2_data),
+        .equal      (equal),
+        .lt_signed  (lt_signed),
         .lt_unsigned(lt_unsigned)
     );
-  
 
 endmodule
+

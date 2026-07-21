@@ -26,11 +26,18 @@ TESTS=(
     bltu
     bgeu
     jump
+    jalr
     lw
     sw
     alu_rtype
     alu_itype
     lui_auipc
+    lb
+    lbu
+    lh
+    lhu
+    sb
+    sh
 )
 
 echo -e "${CYAN}"

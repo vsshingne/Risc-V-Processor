@@ -11,15 +11,12 @@ module program_counter
     output logic [31:0] pc
 );
 
-always_ff @(posedge clk)
-begin
-
-    if(reset)
-        pc <= 32'd0;
-
-    else if(pc_write)
-        pc <= pc_next;
-
-end
+    always_ff @(posedge clk)
+    begin
+        if (reset)
+            pc <= 32'd0;
+        else if (pc_write)
+            pc <= pc_next;
+    end
 
 endmodule
